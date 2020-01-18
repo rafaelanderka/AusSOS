@@ -19,13 +19,14 @@ var mouseDelta;
 var canvasPos;
 var isRotating;
 var directionalLight;
+var pointLight;
 let fireData = {};
 
 // Global constants
 var viewPhiMax = 3.04;
 var viewPhiMin = 0.1;
-var lightThetaOffset = -0.9;
-var lightPhiOffset = 0.6;
+var lightThetaOffset = 0;
+var lightPhiOffset = 0;
 
 function init() {
     // Initialise time
@@ -115,12 +116,18 @@ function init() {
     // Set up scene lighting
     var ambientLight = new THREE.AmbientLight(0x777777);
     scene.add(ambientLight);
-
+    /*
     directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
     var lightPos = transformSphericalToView(viewRho, viewTheta + lightThetaOffset, viewPhi + lightPhiOffset);
     directionalLight.position.set(lightPos.y, lightPos.z, lightPos.x);
     directionalLight.castShadow = true;
     scene.add(directionalLight);
+    */
+    pointLight = new THREE.PointLight(0xFFFFFF, 1, 100)
+    var lightPos = transformSphericalToView(viewRho, viewTheta + lightThetaOffset, viewPhi + lightPhiOffset);
+    pointLight.position.set(0, 0, 0);
+    updateLights();
+    scene.add(pointLight);
 
     // Set up canvas
     canvas = document.getElementsByTagName("canvas")[0];
@@ -163,8 +170,8 @@ function update() {
 
 function updateLights() {
     var lightPos = transformSphericalToView(viewRho, viewTheta + lightThetaOffset, viewPhi + lightPhiOffset);
-    directionalLight.position.set(lightPos.y, lightPos.z, lightPos.x);
-    scene.add(directionalLight);
+    lightPos.applyQuaternion(camera.quaternion);
+    pointLight.position.set(lightPos.x, lightPos.y, lightPos.z);
 }
 
 function getFireData() {
