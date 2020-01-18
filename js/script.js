@@ -129,10 +129,11 @@ function getFireData() {
         .then(function (text) {
             fireData = JSON.parse(text);
 
+            let total = 0;
             for (const feature of fireData["features"]) {
                 let sizeString = feature["properties"]["description"].match(/SIZE: [0-9]*/gm)[0];
                 sizeString = sizeString.slice(6);
-                console.log(sizeString);
+                total += parseInt(sizeString);
             }
         })
         .catch(function (error) {
