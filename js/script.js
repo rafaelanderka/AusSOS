@@ -56,11 +56,24 @@ function init() {
     
     scene.background = new THREE.Color( 0xf0f0f0 ); // UPDATED
     t = 0;
+    
+    // Create donate button
+    var button = document.createElement("button");
+    button.innerHTML = "Donate.";
+    
+    var body = document.getElementsByTagName("body")[0];
+    body.appendChild(button);
+
+    button.onclick = redirectDonate();
+
     animate();
 }
 
 function drawline(x1, y1, x2, y2) {
-    
+}
+
+function redirectDonate() {
+    window.location.href = "https://www.wwf.org.au/get-involved/bushfire-emergency#gs.ta69pg";
 }
 
 function animate() {
