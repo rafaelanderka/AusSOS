@@ -129,12 +129,10 @@ function getFireData() {
         .then(function (text) {
             fireData = JSON.parse(text);
 
-            let e = document.createElement('p');
-            document.body.append(e);
-            e.innerHTML = text;
-
             for (const feature of fireData["features"]) {
-                console.log(feature);
+                let sizeString = feature["properties"]["description"].match(/SIZE: [0-9]*/gm)[0];
+                sizeString = sizeString.slice(6);
+                console.log(sizeString);
             }
         })
         .catch(function (error) {
