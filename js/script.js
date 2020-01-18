@@ -1,5 +1,10 @@
-var camera, scene, renderer;
-var geometry, material, earth;
+var camera
+var scene
+var renderer;
+var geometry
+var material;
+var earthLandMesh;
+var earthWaterMesh;
 var t;
 
 function init() {
@@ -10,31 +15,28 @@ function init() {
     scene = new THREE.Scene();
 
     //geometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 );
-    materialLand = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-    materialSea = new THREE.MeshBasicMaterial( { color: 0x0000ff } );
-
-    //mesh = new THREE.Mesh( geometry, material );
-    //scene.add( mesh );
+    materialEarthLand = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+    materialEarthWater = new THREE.MeshBasicMaterial( { color: 0x0000ff } );
 
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
 
-    
     // Load earth
     var loader = new THREE.OBJLoader();
 
+    // Load land
     loader.load(
         // resource URL
-        '/models/earth.obj',
+        '/models/earth_land.obj',
         // called when resource is loaded
         function ( object ) {
-            earth = object;
+            earthLandMesh = object;
             object.traverse( function( child ) {
                 console.log(child);
                 if ( child instanceof THREE.Mesh ) {
                     console.log(child);
-                    child.material = materialLand;
+                    child.material = materialEarthLand;
                 }
             } );
             scene.add( object );
@@ -42,19 +44,42 @@ function init() {
         },
         // called when loading is in progresses
         function ( xhr ) {
-
             console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-
         },
         // called when loading has errors
         function ( error ) {
-
             console.log( 'An error happened' );
+        }
+    );
 
+    // Load water
+    loader.load(
+        // resource URL
+        '/models/earth_water.obj',
+        // called when resource is loaded
+        function ( object ) {
+            earthWaterMesh = object;
+            object.traverse( function( child ) {
+                console.log(child);
+                if ( child instanceof THREE.Mesh ) {
+                    console.log(child);
+                    child.material = materialEarthWater;
+                }
+            } );
+            scene.add( object );
+            console.log("hi");
+        },
+        // called when loading is in progresses
+        function ( xhr ) {
+            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+        },
+        // called when loading has errors
+        function ( error ) {
+            console.log( 'An error happened' );
         }
     );
     
-    scene.background = new THREE.Color( 0xf0f0f0 ); // UPDATED
+    scene.background = new THREE.Color( 0x222222 ); // UPDATED
     t = 0;
     animate();
 }
@@ -67,10 +92,9 @@ function animate() {
 
     requestAnimationFrame( animate );
 
-    //mesh.rotation.x = Math.PI * (1 + Math.sin(t));
-    //mesh.rotation.y += 0.01;
-    //t = (t + 0.005) % (2 * Math.PI);
-
+    earthLandMesh.rotation.x = Math.PI * (1 + Math.sin(t));
+    earthLandMesh.rotation.y += 0.01;
+    t = (t + 0.005) % (2 * Math.PI);
 
     renderer.render( scene, camera );
 
