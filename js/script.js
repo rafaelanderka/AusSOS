@@ -141,6 +141,10 @@ function init() {
     update();
 }
 
+function redirectDonate() {
+    window.location.href = "https://www.wwf.org.au/get-involved/bushfire-emergency#gs.ta7jim";
+}
+
 function update() {
     setCanvasPos();
     if (isRotating) {
@@ -163,6 +167,13 @@ function getFireData() {
         })
         .then(function (text) {
             fireData = JSON.parse(text);
+
+            let total = 0;
+            for (const feature of fireData["features"]) {
+                let sizeString = feature["properties"]["description"].match(/SIZE: [0-9]*/gm)[0];
+                sizeString = sizeString.slice(6);
+                total += parseInt(sizeString);
+            }
         })
         .catch(function (error) {
             console.log(error);
