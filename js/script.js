@@ -94,6 +94,10 @@ function init() {
     directionalLight.castShadow = true;
     scene.add(directionalLight);
 
+    // Set up mouse controls
+    var controls = new THREE.OrbitControls( camera, renderer.domElement );
+    controls.update();
+
     // Set up requestAnimationFrame
     requestAnimationFrame = window.requestAnimationFrame || 
                             window.mozRequestAnimationFrame || 
@@ -106,13 +110,6 @@ function init() {
 
 function update() {
     requestAnimationFrame(update);
-    
-    earthLandMesh.rotation.x = Math.PI * (1 + Math.sin(t));
-    earthLandMesh.rotation.y += 0.01;
-    earthWaterMesh.rotation.x = Math.PI * (1 + Math.sin(t));
-    earthWaterMesh.rotation.y += 0.01;
-
-    t = (t + 0.001) % (2 * Math.PI);
     
     renderer.render(scene, camera);
 }
