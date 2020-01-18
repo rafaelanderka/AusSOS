@@ -3,7 +3,6 @@ var geometry, material, earth;
 var t;
 
 function init() {
-
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
     camera.position.z = 2;
 
@@ -64,7 +63,6 @@ function drawline(x1, y1, x2, y2) {
 }
 
 function animate() {
-
     requestAnimationFrame( animate );
 
     //mesh.rotation.x = Math.PI * (1 + Math.sin(t));
@@ -73,8 +71,6 @@ function animate() {
 
 
     renderer.render( scene, camera );
-
 }
 
 window.onload = init;
-animate();
