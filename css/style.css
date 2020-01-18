@@ -6,6 +6,11 @@ body {
 }
 
 .donate-button {
+    position: absolute;
+    display: block;
+    z-index: 1;
+    right: 5%;
+    top: 5%;
     background-color: #4CAF50; /* Green */
     border: none;
     color: white;
