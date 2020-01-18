@@ -5,23 +5,31 @@ var geometry
 var material;
 var earthLandMesh;
 var earthWaterMesh;
+var requestAnimationFrame;
 var t;
 
 function init() {
+    // Initialise time
+    t = 0;
+
+    // Set up camera
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
     camera.position.z = 2;
 
+    // Set up scene
     scene = new THREE.Scene();
+    scene.background = new THREE.Color( 0x222222 ); // UPDATED
 
-    //geometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 );
-    materialEarthLand = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-    materialEarthWater = new THREE.MeshBasicMaterial( { color: 0x0000ff } );
-
+    // Set up renderer
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
-
-    // Load earth
+    
+    // Set up materials
+    materialEarthLand = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+    materialEarthWater = new THREE.MeshBasicMaterial( { color: 0x0000ff } );
+    
+    // Load OBJs
     var loader = new THREE.OBJLoader();
 
     // Load land
@@ -77,22 +85,23 @@ function init() {
             console.log( 'An error happened' );
         }
     );
+
+    // Set up requestAnimationFrame
+    requestAnimationFrame = window.requestAnimationFrame || 
+                            window.mozRequestAnimationFrame || 
+                            window.webkitRequestAnimationFrame || 
+                            window.msRequestAnimationFrame;
     
-    scene.background = new THREE.Color( 0x222222 ); // UPDATED
-    t = 0;
-    animate();
+    // Start update loop
+    update();
 }
 
-function drawline(x1, y1, x2, y2) {
+function update() {
+    requestAnimationFrame( update );
     
-}
-
-function animate() {
-    requestAnimationFrame( animate );
-
     earthLandMesh.rotation.x = Math.PI * (1 + Math.sin(t));
     earthLandMesh.rotation.y += 0.01;
-    t = (t + 0.005) % (2 * Math.PI);
+    t = (t + 0.001) % (2 * Math.PI);
 
     renderer.render( scene, camera );
 }
