@@ -97,6 +97,15 @@ function init() {
     // Set up mouse controls
     var controls = new THREE.OrbitControls( camera, renderer.domElement );
     controls.update();
+    
+    // Create donate button
+    var button = document.createElement("button");
+    button.innerHTML = "Donate.";
+
+    button.addEventListener('click', redirectDonate, false);
+    
+    var body = document.getElementsByTagName("body")[0];
+    body.appendChild(button);
 
     // Set up requestAnimationFrame
     requestAnimationFrame = window.requestAnimationFrame || 
@@ -106,6 +115,10 @@ function init() {
     
     // Start update loop
     update();
+}
+
+function redirectDonate() {
+    window.location.href = "https://www.wwf.org.au/get-involved/bushfire-emergency#gs.ta7jim";
 }
 
 function update() {
