@@ -18,7 +18,7 @@ function init() {
 
     // Set up scene
     scene = new THREE.Scene();
-    scene.background = new THREE.Color( 0x222222 ); // UPDATED
+    scene.background = new THREE.Color( 0xfff9e6 ); // UPDATED
 
     // Set up renderer
     renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -26,8 +26,8 @@ function init() {
     document.body.appendChild( renderer.domElement );
     
     // Set up materials
-    materialEarthLand = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-    materialEarthWater = new THREE.MeshBasicMaterial( { color: 0x0000ff } );
+    materialEarthLand = new THREE.MeshLambertMaterial( { color: 0x89ff4a } );
+    materialEarthWater = new THREE.MeshLambertMaterial( { color: 0x4aa1ff } );
     
     // Load OBJs
     var loader = new THREE.OBJLoader();
@@ -86,6 +86,15 @@ function init() {
         }
     );
 
+    // Set up scene lighting
+    var ambientLight = new THREE.AmbientLight(0x777777);
+    scene.add(ambientLight);
+
+    var directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
+    directionalLight.position.set(-1, 2, 1.5);
+    directionalLight.castShadow = true;
+    scene.add(directionalLight);
+
     // Set up requestAnimationFrame
     requestAnimationFrame = window.requestAnimationFrame || 
                             window.mozRequestAnimationFrame || 
@@ -101,6 +110,9 @@ function update() {
     
     earthLandMesh.rotation.x = Math.PI * (1 + Math.sin(t));
     earthLandMesh.rotation.y += 0.01;
+    earthWaterMesh.rotation.x = Math.PI * (1 + Math.sin(t));
+    earthWaterMesh.rotation.y += 0.01;
+
     t = (t + 0.001) % (2 * Math.PI);
     
     renderer.render(scene, camera);
