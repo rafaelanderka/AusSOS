@@ -6,15 +6,40 @@ var material;
 var earthLandMesh;
 var earthWaterMesh;
 var requestAnimationFrame;
+var viewFocus;
+var viewRho;
+var viewTheta;
+var viewPhi;
+var viewOmegaTheta;
+var viewOmegaPhi;
 var t;
+var canvas;
+var mousePos;
+var mouseDelta;
+var canvasPos;
+var isRotating;
+let fireData = {};
+
+// Global constants
+var viewPhiMax = 3.04;
+var viewPhiMin = 0.1;
 
 function init() {
     // Initialise time
     t = 0;
 
+    // Initialise view
+    viewFocus = new THREE.Vector3(0, 0, 0);
+    viewRho = 2;
+    viewTheta = 0;
+    viewPhi = Math.PI / 2;
+    viewOmegaTheta = 0.1;
+    viewOmegaPhi = 0.1;
+
     // Set up camera
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
-    camera.position.z = 2;
+    camera.updateMatrixWorld();
+    updateCameraPosition();
 
     // Set up scene
     scene = new THREE.Scene();
@@ -94,9 +119,17 @@ function init() {
     directionalLight.castShadow = true;
     scene.add(directionalLight);
 
+    // Set up canvas
+    canvas = document.getElementsByTagName("canvas")[0];
+    setCanvasPos();
+
     // Set up mouse controls
-    var controls = new THREE.OrbitControls( camera, renderer.domElement );
-    controls.update();
+    canvas.addEventListener("mousedown", function(){ isRotating = true; }, false);
+    canvas.addEventListener("mouseup", function(){ isRotating = false; }, false);
+    canvas.addEventListener("mousemove", setMousePos, false);
+    mousePos = {x: 0, y: 0};
+    mouseDelta = {x: 0, y: 0};
+    isRotating = false;
 
     // Set up requestAnimationFrame
     requestAnimationFrame = window.requestAnimationFrame || 
@@ -109,9 +142,15 @@ function init() {
 }
 
 function update() {
-    requestAnimationFrame(update);
-    
+    setCanvasPos();
+    if (isRotating) {
+        viewOmegaTheta = mouseDelta.x * 0.002;
+        viewOmegaPhi = mouseDelta.y * 0.002;
+    }
+    updateView();
+    updateCameraPosition();
     renderer.render(scene, camera);
+    requestAnimationFrame(update);
 }
 
 function getFireData() {
@@ -130,7 +169,92 @@ function getFireData() {
         });
 }
 
-let fireData = {};
+function sphericalToCartesian(rho, theta, phi) {
+    var x = rho * Math.sin(theta) * Math.cos(phi);
+    var y = rho * Math.sin(theta) * Math.sin(phi);
+    var z = rho * Math.cos(theta);
+    return {
+        x: x,
+        y: y,
+        z: z
+    };
+}
+
+function transformSphericalToView(rho, theta, phi) {
+    var centeredTransform = sphericalToCartesian(rho, theta, phi);
+    return new THREE.Vector3(centeredTransform.x + viewFocus.x, centeredTransform.y + viewFocus.y,
+                             centeredTransform.z + viewFocus.z);
+}
+
+function updateCameraPosition() {
+    var worldPosition = transformSphericalToView(viewRho, viewPhi, viewTheta);
+    camera.position.set(worldPosition.y, worldPosition.z, worldPosition.x);
+    camera.lookAt(viewFocus);
+}
+
+function updateView() {
+    if (viewPhi + viewOmegaPhi > viewPhiMax) {
+        viewPhi = viewPhiMax;
+    } else if (viewPhi + viewOmegaPhi < viewPhiMin) {
+        viewPhi = viewPhiMin;
+    } else {
+        viewPhi = viewPhi + viewOmegaPhi;
+    }
+    
+    viewTheta = (viewTheta + viewOmegaTheta) % (2 * Math.PI);
+    viewOmegaPhi = viewOmegaPhi * 0.95;
+    viewOmegaTheta = viewOmegaTheta * 0.95;
+}
+
+function setMousePos(e) {
+    prevMousePos = mousePos;
+    mousePos = {
+        x: scaleByPixelRatio(e.clientX - canvasPos.x),
+        y: scaleByPixelRatio(e.clientY - canvasPos.y)
+    };
+    mouseDelta = {
+        x: prevMousePos.x - mousePos.x,
+        y: prevMousePos.y - mousePos.y
+    }
+    console.log(mouseDelta);
+}
+
+function scaleByPixelRatio (input) {
+    var pixelRatio = window.devicePixelRatio || 1;
+    return Math.floor(input * pixelRatio);
+}
+
+function setCanvasPos() {
+    canvasPos = getPosition(canvas);
+}
+
+// Helper function to get an element's exact position
+function getPosition(el) {
+    var xPos = 0;
+    var yPos = 0;
+    
+    while (el) {
+        if (el.tagName == "BODY") {
+            // Deal with browser quirks with body/window/document and page scroll
+            var xScroll = el.scrollLeft || document.documentElement.scrollLeft;
+            var yScroll = el.scrollTop || document.documentElement.scrollTop;
+            
+            xPos += (el.offsetLeft - xScroll + el.clientLeft);
+            yPos += (el.offsetTop - yScroll + el.clientTop);
+        } else {
+            // For all other non-BODY elements
+            xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft);
+            yPos += (el.offsetTop - el.scrollTop + el.clientTop);
+        }
+        
+        el = el.offsetParent;
+    }
+    return {
+        x: xPos,
+        y: yPos
+    };
+}
 
 window.onload = init;
+
 getFireData();
