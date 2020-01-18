@@ -18,11 +18,14 @@ var mousePos;
 var mouseDelta;
 var canvasPos;
 var isRotating;
+var directionalLight;
 let fireData = {};
 
 // Global constants
 var viewPhiMax = 3.04;
 var viewPhiMin = 0.1;
+var lightThetaOffset = -0.9;
+var lightPhiOffset = 0.6;
 
 function init() {
     // Initialise time
@@ -30,11 +33,11 @@ function init() {
 
     // Initialise view
     viewFocus = new THREE.Vector3(0, 0, 0);
-    viewRho = 2;
+    viewRho = 7;
     viewTheta = 0;
     viewPhi = Math.PI / 2;
-    viewOmegaTheta = 0.1;
-    viewOmegaPhi = 0.1;
+    viewOmegaTheta = 0;
+    viewOmegaPhi = 0;
 
     // Set up camera
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
@@ -60,7 +63,7 @@ function init() {
     // Load land
     loader.load(
         // resource URL
-        '/models/earth_land.obj',
+        '/models/earth_land_hq.obj',
         // called when resource is loaded
         function ( object ) {
             earthLandMesh = object;
@@ -82,11 +85,11 @@ function init() {
             console.log( 'An error happened' );
         }
     );
-
+    
     // Load water
     loader.load(
         // resource URL
-        '/models/earth_water.obj',
+        '/models/earth_water_hq.obj',
         // called when resource is loaded
         function ( object ) {
             earthWaterMesh = object;
@@ -98,7 +101,6 @@ function init() {
                 }
             } );
             scene.add( object );
-            console.log("hi");
         },
         // called when loading is in progresses
         function ( xhr ) {
@@ -114,8 +116,9 @@ function init() {
     var ambientLight = new THREE.AmbientLight(0x777777);
     scene.add(ambientLight);
 
-    var directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
-    directionalLight.position.set(-1, 2, 1.5);
+    directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
+    var lightPos = transformSphericalToView(viewRho, viewTheta + lightThetaOffset, viewPhi + lightPhiOffset);
+    directionalLight.position.set(lightPos.y, lightPos.z, lightPos.x);
     directionalLight.castShadow = true;
     scene.add(directionalLight);
 
@@ -148,13 +151,20 @@ function redirectDonate() {
 function update() {
     setCanvasPos();
     if (isRotating) {
-        viewOmegaTheta = mouseDelta.x * 0.002;
-        viewOmegaPhi = mouseDelta.y * 0.002;
+        viewOmegaTheta = mouseDelta.x * 0.005;
+        viewOmegaPhi = mouseDelta.y * 0.005;
     }
     updateView();
     updateCameraPosition();
+    updateLights();
     renderer.render(scene, camera);
     requestAnimationFrame(update);
+}
+
+function updateLights() {
+    var lightPos = transformSphericalToView(viewRho, viewTheta + lightThetaOffset, viewPhi + lightPhiOffset);
+    directionalLight.position.set(lightPos.y, lightPos.z, lightPos.x);
+    scene.add(directionalLight);
 }
 
 function getFireData() {
@@ -211,7 +221,7 @@ function updateView() {
     } else {
         viewPhi = viewPhi + viewOmegaPhi;
     }
-    
+
     viewTheta = (viewTheta + viewOmegaTheta) % (2 * Math.PI);
     viewOmegaPhi = viewOmegaPhi * 0.95;
     viewOmegaTheta = viewOmegaTheta * 0.95;
