@@ -47,7 +47,6 @@ function init() {
                 }
             } );
             scene.add( object );
-            console.log("hi");
         },
         // called when loading is in progresses
         function ( xhr ) {
@@ -119,4 +118,23 @@ function update() {
     renderer.render(scene, camera);
 }
 
+function getFireData() {
+    const proxyurl = "https://cors-anywhere.herokuapp.com/";
+    const url = "https://www.rfs.nsw.gov.au/feeds/majorIncidents.json"; // site that doesn’t send Access-Control-*
+
+    fetch(proxyurl + url)
+        .then(function (response) {
+            return response.text();
+        })
+        .then(function (text) {
+            fireData = JSON.parse(text);
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+}
+
+let fireData = {};
+
 window.onload = init;
+getFireData();
