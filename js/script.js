@@ -5,23 +5,31 @@ var geometry
 var material;
 var earthLandMesh;
 var earthWaterMesh;
+var requestAnimationFrame;
 var t;
 
 function init() {
+    // Initialise time
+    t = 0;
+
+    // Set up camera
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
     camera.position.z = 2;
 
+    // Set up scene
     scene = new THREE.Scene();
+    scene.background = new THREE.Color( 0x222222 ); // UPDATED
 
-    //geometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 );
-    materialEarthLand = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-    materialEarthWater = new THREE.MeshBasicMaterial( { color: 0x0000ff } );
-
+    // Set up renderer
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
-
-    // Load earth
+    
+    // Set up materials
+    materialEarthLand = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+    materialEarthWater = new THREE.MeshBasicMaterial( { color: 0x0000ff } );
+    
+    // Load OBJs
     var loader = new THREE.OBJLoader();
 
     // Load land
@@ -77,37 +85,34 @@ function init() {
             console.log( 'An error happened' );
         }
     );
-    
-    scene.background = new THREE.Color( 0x222222 ); // UPDATED
-    t = 0;
-    
+
     // Create donate button
     var button = document.createElement("button");
     button.innerHTML = "Donate.";
-    
+   
     var body = document.getElementsByTagName("body")[0];
     body.appendChild(button);
 
     button.addEventListener('click', redirectDonate(), false);
 
-    animate();
+    // Set up requestAnimationFrame
+    requestAnimationFrame = window.requestAnimationFrame || 
+                            window.mozRequestAnimationFrame || 
+                            window.webkitRequestAnimationFrame || 
+                            window.msRequestAnimationFrame;
+    
+    // Start update loop
+    update();
 }
 
-function drawline(x1, y1, x2, y2) {
-}
-
-function redirectDonate() {
-    window.location.href = "https://www.wwf.org.au/get-involved/bushfire-emergency#gs.ta69pg";
-}
-
-function animate() {
-    requestAnimationFrame( animate );
-
+function update() {
+    requestAnimationFrame(update);
+    
     earthLandMesh.rotation.x = Math.PI * (1 + Math.sin(t));
     earthLandMesh.rotation.y += 0.01;
-    t = (t + 0.005) % (2 * Math.PI);
-
-    renderer.render( scene, camera );
+    t = (t + 0.001) % (2 * Math.PI);
+    
+    renderer.render(scene, camera);
 }
 
 window.onload = init;
