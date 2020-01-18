@@ -97,13 +97,13 @@ function init() {
 }
 
 function update() {
+    requestAnimationFrame(update);
+    
     earthLandMesh.rotation.x = Math.PI * (1 + Math.sin(t));
     earthLandMesh.rotation.y += 0.01;
     t = (t + 0.001) % (2 * Math.PI);
     
     renderer.render(scene, camera);
-    
-    requestAnimationFrame(update);
 }
 
 window.onload = init;
