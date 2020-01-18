@@ -88,11 +88,11 @@ function init() {
     // Create donate button
     var button = document.createElement("button");
     button.innerHTML = "Donate.";
-   
+
+    button.addEventListener('click', redirectDonate, false);
+    
     var body = document.getElementsByTagName("body")[0];
     body.appendChild(button);
-
-    button.addEventListener('click', redirectDonate(), false);
 
     // Set up requestAnimationFrame
     requestAnimationFrame = window.requestAnimationFrame || 
