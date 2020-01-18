@@ -105,6 +105,10 @@ function init() {
     update();
 }
 
+function redirectDonate() {
+    window.location.href = "https://www.wwf.org.au/get-involved/bushfire-emergency#gs.ta7jim";
+}
+
 function update() {
     requestAnimationFrame(update);
     
