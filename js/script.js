@@ -128,6 +128,14 @@ function getFireData() {
         })
         .then(function (text) {
             fireData = JSON.parse(text);
+
+            let e = document.createElement('p');
+            document.body.append(e);
+            e.innerHTML = text;
+
+            for (const feature of fireData["features"]) {
+                console.log(feature);
+            }
         })
         .catch(function (error) {
             console.log(error);
