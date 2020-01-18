@@ -88,7 +88,7 @@ function init() {
     var body = document.getElementsByTagName("body")[0];
     body.appendChild(button);
 
-    button.onclick = redirectDonate();
+    button.addEventListener('click', redirectDonate(), false);
 
     animate();
 }
