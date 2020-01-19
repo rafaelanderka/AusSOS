@@ -6,8 +6,7 @@ body {
 }
 
 .donate-button {
-    position: absolute;
-    display: block;
+    float: right;
     z-index: 1;
     right: 5%;
     top: 5%;
@@ -17,9 +16,9 @@ body {
     padding: 15px 18px;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
     font-size: 17px;
     font-weight: 800;
+    margin: 4.05vh 4px 0px;
 }
 
 .donate-button:hover {
@@ -31,11 +30,23 @@ body {
 }
 
 #logo {
-    position: absolute;
-    position: absolute;
-    display: block;
+    float: left;
     z-index: 1;
     top: 4.5%;
     left: 5%;
-    width: 260px;
+    width: 273px;
+    margin: 3.3vh 0px 0px;
+}
+
+#ui-wrapper {
+    display: inline-block;
+    width: 90%;
+    max-width: 1300px;
+    overflow: hidden;
+}
+
+#container {
+    position: absolute;
+    width: 100%;
+    text-align: center;
 }
