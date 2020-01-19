@@ -25,12 +25,16 @@ var pointLight;
 var isFirstTouch;
 var pixelRatio;
 let fireData = {};
+var totalSize;
+var virtualSurfaceArea;
+var surfaceAreaRatio;
 
 // Global constants
 var viewPhiMax = 3.04;
 var viewPhiMin = 0.1;
 var lightThetaOffset = 0;
 var lightPhiOffset = 0;
+var earthSurfaceAreaKM = 510100000
 
 function init() {
     // Initialise time
@@ -71,7 +75,9 @@ function init() {
     setCanvasPos();
 
     // Set up sphere
-    let geometry = new THREE.SphereGeometry(0.5, 32, 32);
+    virtualSurfaceArea = 0.5;
+    surfaceAreaRatio = earthSurfaceAreaKM/virtualSurfaceArea;
+    let geometry = new THREE.SphereGeometry(virtualSurfaceArea, 32, 32);
     let material = new THREE.MeshLambertMaterial();
     let earthMesh = new THREE.Mesh(geometry, material);
     scene.add(earthMesh)
@@ -82,13 +88,17 @@ function init() {
     material.emissive = new THREE.Color(0xFF8877);
 
     // Plane that gets projected on Earth
-    let overlayGeometry = new THREE.PlaneGeometry(0.1, 0.1, 10, 10);
+//    let overlayGeometry = new THREE.PlaneGeometry(1, 1, 10, 10);
+    var scaledRad = totalSize / surfaceAreaRatio;
+    let overlayGeometry = new THREE.CircleGeometry(scaledRad, 64, 10, 10);
+    
     let overlayMaterial = new THREE.MeshPhongMaterial({
                 color: 'blue'
     });
     overlayMesh = new THREE.Mesh(overlayGeometry, overlayMaterial);
     overlayMesh.material.side = THREE.DoubleSide;
     scene.add(overlayMesh)
+    
 
     // Projection stuff
     for (var vertexIndex = 0; vertexIndex < overlayMesh.geometry.vertices.length; vertexIndex++) {
@@ -111,6 +121,8 @@ function init() {
     // IDK if we need this
     overlayMesh.geometry.verticesNeedUpdate = true;
     overlayMesh.geometry.normalsNeedUpdate = true;
+
+
 
     // Set up scene lighting
     let ambientLight = new THREE.AmbientLight(0x18191D);
@@ -196,10 +208,6 @@ function redirectDonate() {
     window.location.href = "https://www.wwf.org.au/get-involved/bushfire-emergency#gs.ta7jim";
 }
 
-function redirectStat() {
-    window.location.href = "https://www.rfs.nsw.gov.au/fire-information/fires-near-me";
-}
-
 function update() {
     // Set canvas position
     // TODO: resize canvas
@@ -273,19 +281,12 @@ function getFireData() {
         .then(function (text) {
             fireData = JSON.parse(text);
 
-            let totalSize = 0;
-
             for (const feature of fireData["features"]) {
                 let sizeString = feature["properties"]["description"].match(/SIZE: [0-9]*/gm)[0];
                 sizeString = sizeString.slice(6);
-                totalSize += parseInt(sizeString);
+                console.log(sizeString);
+                totalSize = sizeString;
             }
-
-            let numFiresElement = document.getElementById('num-stat');
-            numFiresElement.innerHTML += fireData["features"].length;
-
-            let fireSizeElement = document.getElementById('size-stat');
-            fireSizeElement.innerHTML += (totalSize / 100) + ' KM&sup2';
         })
         .catch(function (error) {
             console.log(error);
