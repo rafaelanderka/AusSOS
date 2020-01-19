@@ -4,6 +4,8 @@
 
 AussieSOS is an interactive website to spread awareness and raise funds using live data from the ongoing Australian wildfires. Pulling data directly from Australian firefighting services and using a highly responsive, JavaScript-based globe model that we created from scratch, users can drag and orientate a to-scale polygon representing the total fire area. This can be placed on any part of the globe to gain a better intuitive understanding of the scale of the fires. Immediate donation to support all affected is available.
 
+![](https://github.com/rafaelanderka/hackcambridge101/blob/master/promo/aussiesos-loop.gif?raw=true)
+
 For example: if 32,000km<sup>2</sup> of Australia is on fire, that is twice the size of Wales. 
 
 # The Issue in More Depth
@@ -24,3 +26,7 @@ Made entirely in the front-end, before the Hackathon we all had little experienc
 - Donate now: a direct call to action interface for donating financially to bushfire relief.
 
 The majority of the code is written in JavaScript, with some HTML and CSS along the way too.
+
+# Authors
+
+This is a Hack Cambridge 101 Hackathon project by Neil Weidinger, Matt Timmons-Brown and Rafael Anderka, that was taken from idea to implementation from Sat 18th-Sun 19th Jan in 24 hours. We are all second year students at the University of Edinburgh, studying for degrees in Computer Science and AI.
