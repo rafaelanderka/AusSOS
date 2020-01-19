@@ -42,6 +42,8 @@ function init() {
     clock = new THREE.Clock();
     t = 0;
 
+    getFireData();
+
     // Initialise pixel ratio
     pixelRatio = window.devicePixelRatio || 1;
 
@@ -299,28 +301,25 @@ function getFireData() {
     const proxyurl = "https://cors-anywhere.herokuapp.com/";
     const url = "https://www.rfs.nsw.gov.au/feeds/majorIncidents.json"; // site that doesn’t send Access-Control-*
 
-    fetch(proxyurl + url)
-        .then(function (response) {
-            return response.text();
-        })
-        .then(function (text) {
-            fireData = JSON.parse(text);
+    let request = new XMLHttpRequest();  // XMLHttpRequest bc fetch is asynchronous :))
+    request.open('GET', proxyurl + url, false);
+    request.send(null);
 
-            for (const feature of fireData["features"]) {
-                let sizeString = feature["properties"]["description"].match(/SIZE: [0-9]*/gm)[0];
-                sizeString = sizeString.slice(6);
-                totalSize += parseInt(sizeString);
-            }
+    if (request.status == 200) {
+        fireData = JSON.parse(request.responseText);
 
-            let numFiresElement = document.getElementById('num-stat');
-            numFiresElement.innerHTML += fireData["features"].length;
+        for (const feature of fireData["features"]) {
+            let sizeString = feature["properties"]["description"].match(/SIZE: [0-9]*/gm)[0];
+            sizeString = sizeString.slice(6);
+            totalSize += parseInt(sizeString);
+        }
 
-            let fireSizeElement = document.getElementById('size-stat');
-            fireSizeElement.innerHTML += (totalSize / 100) + ' KM&sup2';
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
+        let numFiresElement = document.getElementById('num-stat');
+        numFiresElement.innerHTML += fireData["features"].length;
+
+        let fireSizeElement = document.getElementById('size-stat');
+        fireSizeElement.innerHTML += (totalSize / 100) + ' KM&sup2';
+    }
 }
 
 function sphericalToCartesian(rho, theta, phi) {
@@ -430,4 +429,3 @@ function setCanvasPos() {
 }
 
 window.onload = init;
-getFireData();
