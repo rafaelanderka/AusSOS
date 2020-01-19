@@ -30,6 +30,7 @@ let clock;
 let fireData = {};
 let totalSize = 0;
 let scaledRadius = 0;
+let pyramids = [];
 
 // Global constants
 const viewPhiMax = 3.04;
@@ -107,7 +108,7 @@ function init() {
     let geometry = new THREE.SphereGeometry(0.5, 32, 32);
     let material = new THREE.MeshLambertMaterial();
     let earthMesh = new THREE.Mesh(geometry, material);
-    scene.add(earthMesh)
+    // scene.add(earthMesh)
     
     // Load Earth textures
     material.map = THREE.ImageUtils.loadTexture('images/Earth_Clouds_6k.jpg');
@@ -124,8 +125,33 @@ function init() {
     });
     overlayMesh = new THREE.Mesh(overlayGeometry, overlayMaterial);
     overlayMesh.material.side = THREE.DoubleSide;
-    scene.add(overlayMesh)
+    scene.add(overlayMesh);
     
+
+
+
+
+
+    // FIRE?
+
+    let pyramid = new THREE.ConeGeometry(.1, .2, 6);
+    let pyramidMaterial = new THREE.MeshBasicMaterial({color: 'orange'});
+    let pyramidMesh = new THREE.Mesh(pyramid, pyramidMaterial);
+    scene.add(pyramidMesh);
+    pyramids.push(pyramidMesh);
+
+
+    let pyramid2 = new THREE.ConeGeometry(.1, .2, 6);
+    let pyramid2Material = new THREE.MeshBasicMaterial({color: 'orange'});
+    let pyramid2Mesh = new THREE.Mesh(pyramid2, pyramid2Material);
+    pyramid2Mesh.position.addScalar(0.15);
+    scene.add(pyramid2Mesh);
+    pyramids.push(pyramid2Mesh);
+
+
+
+
+
 
     // Projection stuff
     for (let vertexIndex = 0; vertexIndex < overlayMesh.geometry.vertices.length; vertexIndex++) {
@@ -199,7 +225,6 @@ function init() {
     });
 
     canvas.addEventListener("wheel", function(e) {
-        console.log(viewRho);
         if (viewRho + (e.deltaY * 0.001) > 0.58 && viewRho + (e.deltaY * 0.001) < 1.1) {
             viewRho += (e.deltaY * 0.001);
         }
@@ -276,9 +301,16 @@ function update() {
     updateCameraPosition();
     updateLights();
     updateOverlay();
+    updateFire();
     //renderer.render(scene, camera);
     requestAnimationFrame(update);
     composer.render(clock.getDelta());
+}
+
+function updateFire() {
+    for (let pyramid of pyramids) {
+        pyramid.position.y += 0.001;
+    }
 }
 
 function onWindowResize() {
