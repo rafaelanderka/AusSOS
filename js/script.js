@@ -1,7 +1,8 @@
 var camera
 var scene
 var renderer;
-var planeMesh;
+var raycaster;
+var overlayMesh;
 var requestAnimationFrame;
 var viewFocus;
 var viewRho;
@@ -9,12 +10,16 @@ var viewTheta;
 var viewPhi;
 var viewOmegaTheta;
 var viewOmegaPhi;
-var t;
+var overlayTheta;
+var overlayPhi;
+var overlayOmegaTheta;
+var overlayOmegaPhi;
 var canvas;
 var mousePos;
 var mouseDelta;
 var canvasPos;
 var isRotating;
+var isDragging;
 var directionalLight;
 var pointLight;
 let fireData = {};
@@ -37,46 +42,52 @@ function init() {
     viewOmegaTheta = 0;
     viewOmegaPhi = 0;
 
+    // Initialise overlay
+    overlayTheta = 0;
+    overlayPhi = Math.PI / 2;
+    overlayOmegaTheta = 0;
+    overlayOmegaPhi = 0;
+    
+    
     // Set up camera
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
-    camera.position.z = 2;
-
+    
     // Set up scene
     scene = new THREE.Scene();
     scene.background = new THREE.Color( 0x18191D ); // UPDATED
-
+    
     // Set up renderer
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
+    
+    // Set up canvas
+    canvas = document.getElementsByTagName("canvas")[0];
+    setCanvasPos();
 
     // Set up sphere
     let geometry = new THREE.SphereGeometry(0.5, 32, 32);
     let material = new THREE.MeshLambertMaterial();
     let earthMesh = new THREE.Mesh(geometry, material);
-
     scene.add(earthMesh)
-
+    
     // Load Earth textures
     material.map = THREE.ImageUtils.loadTexture('images/Earth_Clouds_6k.jpg');
-    material.emissiveMap = THREE.ImageUtils.loadTexture('images/Earth_Illumination_6k.jpg');
-    material.emissive = new THREE.Color(0xFFCCBB);
-    //material.bumpMap = THREE.ImageUtils.loadTexture('images/8081_earthbump10k.jpg');
-    //material.bumpScale = 1;
-
+    material.emissiveMap = THREE.ImageUtils.loadTexture('images/Earth_Fire_6k.png');
+    material.emissive = new THREE.Color(0xFF8877);
 
     // Plane that gets projected on Earth
-    let planeGeometry = new THREE.PlaneGeometry(0.1, 0.1, 10, 10);
-    let planeMaterial = new THREE.MeshPhongMaterial({
+    let overlayGeometry = new THREE.PlaneGeometry(0.1, 0.1, 10, 10);
+    let overlayMaterial = new THREE.MeshPhongMaterial({
                 color: 'blue'
     });
-    planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
-    planeMesh.material.side = THREE.DoubleSide;
-    scene.add(planeMesh)
+    overlayMesh = new THREE.Mesh(overlayGeometry, overlayMaterial);
+    overlayMesh.material.side = THREE.DoubleSide;
+    scene.add(overlayMesh)
 
     // Projection stuff
-    for (var vertexIndex = 0; vertexIndex < planeMesh.geometry.vertices.length; vertexIndex++) {
-        var localVertex = planeMesh.geometry.vertices[vertexIndex].clone();
+    for (var vertexIndex = 0; vertexIndex < overlayMesh.geometry.vertices.length; vertexIndex++) {
+        var localVertex = overlayMesh.geometry.vertices[vertexIndex].clone();
         localVertex.z = 0.61;
 
         var directionVector = new THREE.Vector3();
@@ -88,13 +99,13 @@ function init() {
         var collisionResults = ray.intersectObject(earthMesh);
 
         if (collisionResults.length > 0) {
-            planeMesh.geometry.vertices[vertexIndex].z = collisionResults[0].point.z + 0.01;
+            overlayMesh.geometry.vertices[vertexIndex].z = collisionResults[0].point.z + 0.01;
         }
     }
 
     // IDK if we need this
-    planeMesh.geometry.verticesNeedUpdate = true;
-    planeMesh.geometry.normalsNeedUpdate = true;
+    overlayMesh.geometry.verticesNeedUpdate = true;
+    overlayMesh.geometry.normalsNeedUpdate = true;
 
     // Set up scene lighting
     let ambientLight = new THREE.AmbientLight(0x18191D);
@@ -112,17 +123,18 @@ function init() {
     updateLights();
     scene.add(pointLight);
 
-     // Set up canvas
-    canvas = document.getElementsByTagName("canvas")[0];
-    setCanvasPos();
+    // Set up global raycaster
+    raycaster = new THREE.Raycaster();
+
     
     // Set up mouse controls
-    canvas.addEventListener("mousedown", function(){ isRotating = true;  }, false);
-    canvas.addEventListener("mouseup", function(){ isRotating = false;  }, false);
     canvas.addEventListener("mousemove", setMousePos, false);
+    canvas.addEventListener("mousedown", onClick, false);
+    canvas.addEventListener("mouseup", function(){ isRotating = false; isDragging = false; }, false);
     mousePos = {x: 0, y: 0};
     mouseDelta = {x: 0, y: 0};
     isRotating = false;
+    isDragging = false;
 
     // Set up requestAnimationFrame
     requestAnimationFrame = window.requestAnimationFrame || 
@@ -134,35 +146,91 @@ function init() {
     update();
 }
 
+function onClick(e) {
+    // Set state based on raycast intersection
+    var centeredMouse = {x: 0, y: 0};
+    centeredMouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
+    centeredMouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
+
+    raycaster.setFromCamera( centeredMouse, camera );    
+    var intersects = raycaster.intersectObjects( scene.children );
+    
+    for ( var i = 0; i < intersects.length; i++ ) {
+        if (intersects[i].object == overlayMesh) {
+            // If user touched overlay then enter dragging state
+            isDragging = true;
+            return;
+        }
+    }
+    
+    // Else enter rotating state
+    isRotating = true;
+}
+
 function redirectDonate() {
     window.location.href = "https://www.wwf.org.au/get-involved/bushfire-emergency#gs.ta7jim";
 }
 
 function update() {
+    // Set canvas position
+    // TODO: resize canvas
     setCanvasPos();
 
+    // Handle rotation and dragging
     if (isRotating) {
-        viewOmegaTheta = viewOmegaTheta * 0.95 + mouseDelta.x * 0.00006;
-        viewOmegaPhi = viewOmegaPhi * 0.95 + mouseDelta.y * 0.00006;
+        // Move the camera
+        viewOmegaTheta = viewOmegaTheta * 0.95 + mouseDelta.x * 0.0001;
+        viewOmegaPhi = viewOmegaPhi * 0.95 + mouseDelta.y * 0.0001;
+    } else if (isDragging) {
+        // Move the overlay
+        overlayOmegaTheta = overlayOmegaTheta * 0.8 + mouseDelta.x * 0.0003;
+        overlayOmegaPhi = overlayOmegaPhi * 0.8 + mouseDelta.y * 0.0003;
     }
 
-    // Rotate the plane
-    let axis = new THREE.Vector3(1, 0, 0);
-    axis.normalize();
-    planeMesh.rotateOnWorldAxis(axis, 0.01);
-
+    // Call update methods
     updateView();
     updateCameraPosition();
     updateLights();
+    updateOverlay();
     renderer.render(scene, camera);
     requestAnimationFrame(update);
-    renderer.render(scene, camera);
+}
+
+function updateOverlay() {
+    // Theta rotation
+    let axis = new THREE.Vector3(0, -1, 0);
+    overlayMesh.rotateOnWorldAxis(axis, overlayOmegaTheta);
+
+    // Phi rotation
+    overlayPos = getCenterPoint(overlayMesh);
+    axis.cross(overlayPos);
+    axis.normalize();
+    console.log(axis);
+    overlayMesh.rotateOnWorldAxis(axis, overlayOmegaPhi);
+
+    // Update angular velocities
+    overlayOmegaTheta = overlayOmegaTheta * 0.9;
+    overlayOmegaPhi = overlayOmegaPhi * 0.9;
 }
 
 function updateLights() {
     var lightPos = transformSphericalToView(viewRho, viewTheta + lightThetaOffset, viewPhi + lightPhiOffset);
     lightPos.applyQuaternion(camera.quaternion);
     pointLight.position.set(lightPos.x, lightPos.y, lightPos.z);
+}
+
+function getCenterPoint(mesh) {
+    var middle = new THREE.Vector3();
+    var geometry = mesh.geometry;
+
+    geometry.computeBoundingBox();
+
+    middle.x = (geometry.boundingBox.max.x + geometry.boundingBox.min.x) / 2;
+    middle.y = (geometry.boundingBox.max.y + geometry.boundingBox.min.y) / 2;
+    middle.z = (geometry.boundingBox.max.z + geometry.boundingBox.min.z) / 2;
+
+    mesh.localToWorld( middle );
+    return middle;
 }
 
 function getFireData() {
@@ -204,44 +272,6 @@ function transformSphericalToView(rho, theta, phi) {
                              centeredTransform.z + viewFocus.z);
 }
 
-function updateCameraPosition() {
-    var worldPosition = transformSphericalToView(viewRho, viewPhi, viewTheta);
-    camera.position.set(worldPosition.y, worldPosition.z, worldPosition.x);
-    camera.lookAt(viewFocus);
-}
-
-function updateView() {
-    if (viewPhi + viewOmegaPhi > viewPhiMax) {
-        viewPhi = viewPhiMax;
-    } else if (viewPhi + viewOmegaPhi < viewPhiMin) {
-        viewPhi = viewPhiMin;
-    } else {
-        viewPhi = viewPhi + viewOmegaPhi;
-    }
-
-    viewTheta = (viewTheta + viewOmegaTheta) % (2 * Math.PI);
-    viewOmegaPhi = viewOmegaPhi * 0.95;
-    viewOmegaTheta = viewOmegaTheta * 0.95;
-}
-
-function setMousePos(e) {
-    prevMousePos = mousePos;
-    mousePos = {
-        x: scaleByPixelRatio(e.clientX - canvasPos.x),
-        y: scaleByPixelRatio(e.clientY - canvasPos.y)
-    };
-    mouseDelta = {
-        x: prevMousePos.x - mousePos.x,
-        y: prevMousePos.y - mousePos.y
-    }
-    console.log(mouseDelta);
-}
-
-function scaleByPixelRatio (input) {
-    var pixelRatio = window.devicePixelRatio || 1;
-    return Math.floor(input * pixelRatio);
-}
-
 function setCanvasPos() {
     canvasPos = getPosition(canvas);
 }
@@ -284,12 +314,6 @@ function sphericalToCartesian(rho, theta, phi) {
     };
 }
 
-function transformSphericalToView(rho, theta, phi) {
-    var centeredTransform = sphericalToCartesian(rho, theta, phi);
-    return new THREE.Vector3(centeredTransform.x + viewFocus.x, centeredTransform.y + viewFocus.y,
-                             centeredTransform.z + viewFocus.z);
-}
-
 function updateCameraPosition() {
     var worldPosition = transformSphericalToView(viewRho, viewPhi, viewTheta);
     camera.position.set(worldPosition.y, worldPosition.z, worldPosition.x);
@@ -320,7 +344,7 @@ function setMousePos(e) {
         x: prevMousePos.x - mousePos.x,
         y: prevMousePos.y - mousePos.y
     }
-    console.log(mouseDelta);
+    //console.log(mouseDelta);
 }
 
 function scaleByPixelRatio (input) {
@@ -330,33 +354,6 @@ function scaleByPixelRatio (input) {
 
 function setCanvasPos() {
     canvasPos = getPosition(canvas);
-}
-
-// Helper function to get an element's exact position
-function getPosition(el) {
-    var xPos = 0;
-    var yPos = 0;
-    
-    while (el) {
-        if (el.tagName == "BODY") {
-            // Deal with browser quirks with body/window/document and page scroll
-            var xScroll = el.scrollLeft || document.documentElement.scrollLeft;
-            var yScroll = el.scrollTop || document.documentElement.scrollTop;
-            
-            xPos += (el.offsetLeft - xScroll + el.clientLeft);
-            yPos += (el.offsetTop - yScroll + el.clientTop);
-        } else {
-            // For all other non-BODY elements
-            xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft);
-            yPos += (el.offsetTop - el.scrollTop + el.clientTop);
-        }
-        
-        el = el.offsetParent;
-    }
-    return {
-        x: xPos,
-        y: yPos
-    };
 }
 
 window.onload = init;
