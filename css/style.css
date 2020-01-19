@@ -5,12 +5,17 @@ body {
     background: #18191D;
 }
 
-.donate-button {
+.wrapper {
+    display: flex;
+    flex-direction: column;
     position: absolute;
-    display: block;
     z-index: 1;
     right: 5%;
     top: 5%;
+    width: 170px;
+}
+
+.button {
     background-color: #9C907F;
     border: none;
     color: #18191D;
@@ -20,18 +25,18 @@ body {
     display: inline-block;
     font-size: 17px;
     font-weight: 800;
+    margin-bottom: 15px;
 }
 
-.donate-button:hover {
+.button:hover {
     background-color: #A9A092;
 }
 
-.donate-button:active {
+.button:active {
     background-color: #83735C;
 }
 
 #logo {
-    position: absolute;
     position: absolute;
     display: block;
     z-index: 1;
