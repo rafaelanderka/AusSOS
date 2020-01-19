@@ -27,16 +27,15 @@ var isFirstTouch;
 var pixelRatio;
 var clock;
 let fireData = {};
-var totalSize;
-var virtualSurfaceArea;
-var surfaceAreaRatio;
+let totalSize = 0;
+let scaledRadius = 0;
 
 // Global constants
 var viewPhiMax = 3.04;
 var viewPhiMin = 0.1;
 var lightThetaOffset = 0;
 var lightPhiOffset = 0;
-var earthSurfaceAreaKM = 510100000
+var earthSurfaceAreaKM = 510100000;
 
 function init() {
     // Initialise time
@@ -98,9 +97,7 @@ function init() {
     setCanvasPos();
 
     // Set up sphere
-    virtualSurfaceArea = 0.5;
-    surfaceAreaRatio = earthSurfaceAreaKM/virtualSurfaceArea;
-    let geometry = new THREE.SphereGeometry(virtualSurfaceArea, 32, 32);
+    let geometry = new THREE.SphereGeometry(0.5, 32, 32);
     let material = new THREE.MeshLambertMaterial();
     let earthMesh = new THREE.Mesh(geometry, material);
     scene.add(earthMesh)
@@ -112,8 +109,9 @@ function init() {
 
     // Plane that gets projected on Earth
 //    let overlayGeometry = new THREE.PlaneGeometry(1, 1, 10, 10);
-    var scaledRad = totalSize / surfaceAreaRatio;
-    let overlayGeometry = new THREE.CircleGeometry(scaledRad, 64, 10, 10);
+    let ratio = earthSurfaceAreaKM / 3.14;
+    scaledRadius = Math.sqrt((49000 / ratio) / 3.14);
+    let overlayGeometry = new THREE.CircleGeometry(scaledRadius, 64, 10, 10);
     
     let overlayMaterial = new THREE.MeshPhongMaterial({
                 color: 'blue'
@@ -307,8 +305,6 @@ function getFireData() {
         })
         .then(function (text) {
             fireData = JSON.parse(text);
-
-            let totalSize = 0;
 
             for (const feature of fireData["features"]) {
                 let sizeString = feature["properties"]["description"].match(/SIZE: [0-9]*/gm)[0];
