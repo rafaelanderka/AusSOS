@@ -46,17 +46,10 @@ body {
     max-width: 300px;
     transition: all 2s linear;
 }
-  
-.callout-header {
-    padding: 25px 15px;
-    background: #9C907F;
-    font-size: 30px;
-    color: black;
-}
 
 .callout-container {
-    padding: 8px;
-    background-color: rgb(209, 196, 174);
+    padding: 25px 20px 1px;
+    background-color: #9C907F;
     color: black;
     text-align: justify
 }
@@ -65,7 +58,7 @@ body {
     position: absolute;
     top: 5px;
     right: 15px;
-    color: white;
+    color: rgb(0, 0, 0);
     font-size: 30px;
     cursor: pointer;
 }
