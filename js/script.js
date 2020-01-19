@@ -45,7 +45,7 @@ function init() {
     t = 0;
 
     // Get fire data
-    getFireData();
+    // getFireData();
     
     // Initialise showcase mode
     showcaseMode = true;
@@ -108,7 +108,7 @@ function init() {
     let geometry = new THREE.SphereGeometry(0.5, 32, 32);
     let material = new THREE.MeshLambertMaterial();
     let earthMesh = new THREE.Mesh(geometry, material);
-    // scene.add(earthMesh)
+    scene.add(earthMesh)
     
     // Load Earth textures
     material.map = THREE.ImageUtils.loadTexture('images/Earth_Clouds_6k.jpg');
@@ -284,14 +284,15 @@ function update() {
 function updateFire() {
     // populate
     if (pyramids.length < 30) {
-        let pyramid = new THREE.ConeGeometry(.1, .2, 6);
+        let pyramid = new THREE.ConeGeometry(.01, .02, 6);
         let pyramidMaterial = new THREE.MeshBasicMaterial({color: 'orange'});
         let pyramidMesh = new THREE.Mesh(pyramid, pyramidMaterial);
         scene.add(pyramidMesh);
 
-        pyramidMesh.position = getCenterPoint(overlayMesh);
-        pyramidMesh.position.z = 0.61;
-        pyramidMesh.position.x += Math.random() * 0.5
+        let temp = getCenterPoint(overlayMesh);
+        pyramidMesh.position.set(temp.x, temp.y, temp.z);
+        pyramidMesh.lookAt(getCenterPoint(overlayMesh).normalize());
+        pyramidMesh.rotateX(Math.PI / 2);
         pyramids.push(pyramidMesh);
     }
     // remove
@@ -301,13 +302,15 @@ function updateFire() {
 
     // update movement
     for (let pyramidMesh of pyramids) {
-        let old
         let temp = getCenterPoint(overlayMesh);
         pyramidMesh.position.set(temp.x, temp.y, temp.z);
-        pyramidMesh.position.x += 0.1;
+        // pyramidMesh.position.x += Math.random() * (0.1 - -0.1) - 0.1;
+        // pyramidMesh.position.x += 0.1;
+        pyramidMesh.lookAt(temp.normalize());
+        pyramidMesh.rotateX(Math.PI / 2);
 
         pyramidMesh.geometry.verticesNeedUpdate = true;
-        pyramidMesh.position.y += 0.001;
+        // pyramidMesh.position.y += 0.001;
     }
 }
 
