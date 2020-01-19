@@ -422,4 +422,4 @@ function setCanvasPos() {
 }
 
 window.onload = init;
-//getFireData();
+getFireData();
