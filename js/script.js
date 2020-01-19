@@ -1,6 +1,7 @@
 var camera
 var scene
 var renderer;
+var composer;
 var raycaster;
 var overlayMesh;
 var requestAnimationFrame;
@@ -24,6 +25,7 @@ var directionalLight;
 var pointLight;
 var isFirstTouch;
 var pixelRatio;
+var clock;
 let fireData = {};
 
 // Global constants
@@ -34,6 +36,7 @@ var lightPhiOffset = 0;
 
 function init() {
     // Initialise time
+    clock = new THREE.Clock();
     t = 0;
 
     // Initialise pixel ratio
@@ -53,7 +56,6 @@ function init() {
     overlayOmegaTheta = 0;
     overlayOmegaPhi = 0;
     
-    
     // Set up camera
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
     
@@ -65,6 +67,27 @@ function init() {
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
+
+    // Set up composer
+    composer = new POSTPROCESSING.EffectComposer(renderer)
+
+    // Set up effect passes
+    const bloomEffect1 = new POSTPROCESSING.BloomEffect({ 
+        luminanceThreshold: 0.4,
+        blendFunction: POSTPROCESSING.BlendFunction.SCREEN,
+        kernelSize: POSTPROCESSING.KernelSize.HUGE });
+    const bloomEffect2 = new POSTPROCESSING.BloomEffect({ 
+        luminanceThreshold: 0.4,
+        blendFunction: POSTPROCESSING.BlendFunction.ADD,
+        kernelSize: POSTPROCESSING.KernelSize.LARGE });
+    const vignetteEffect = new POSTPROCESSING.VignetteEffect({
+        darkness: 0.4
+    });
+    const effectPass1 = new POSTPROCESSING.EffectPass(camera, vignetteEffect, bloomEffect1, bloomEffect2);
+    effectPass1.enabled = true;
+    effectPass1.renderToScreen = true;
+    composer.addPass(new POSTPROCESSING.RenderPass(scene, camera), 2);
+    composer.addPass(effectPass1, 1);
     
     // Set up canvas
     canvas = document.getElementsByTagName("canvas")[0];
@@ -180,7 +203,7 @@ function onClick(e) {
     raycaster.setFromCamera( centeredMouse, camera );    
     var intersects = raycaster.intersectObjects( scene.children );
     
-    for ( var i = 0; i < intersects.length; i++ ) {
+    for (var i = 0; i < intersects.length; i++) {
         if (intersects[i].object == overlayMesh) {
             // If user touched overlay then enter dragging state
             isDragging = true;
@@ -217,8 +240,9 @@ function update() {
     updateCameraPosition();
     updateLights();
     updateOverlay();
-    renderer.render(scene, camera);
+    //renderer.render(scene, camera);
     requestAnimationFrame(update);
+    composer.render(clock.getDelta());
 }
 
 function updateOverlay() {
@@ -230,7 +254,6 @@ function updateOverlay() {
     overlayPos = getCenterPoint(overlayMesh);
     axis.cross(overlayPos);
     axis.normalize();
-    console.log(axis);
     overlayMesh.rotateOnWorldAxis(axis, overlayOmegaPhi);
 
     // Update angular velocities
@@ -387,4 +410,4 @@ function setCanvasPos() {
 }
 
 window.onload = init;
-getFireData();
+//getFireData();
