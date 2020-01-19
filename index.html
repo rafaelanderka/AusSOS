@@ -8,11 +8,15 @@
         <script src="js/script.js"></script>
     </head>
     <body>
-        <img id="logo" src="images/AussieSOS.png" alt="AUSSIE SOS">
-        <div class="wrapper">
-            <button class="button" onclick="redirectDonate()">DONATE NOW</button>
-            <button class="button" onclick="redirectStat()" id="num-stat">ACTIVE FIRES: </button>
-            <button class="button" onclick="redirectStat()" id="size-stat">TOTAL SIZE: </button>
+        <div id="container">
+            <div id="ui-wrapper">
+                <a href="index.html"><img id="logo" src="images/AussieSOS.png" alt="AUSSIE SOS"></a>
+                <div class="wrapper">
+                    <button class="button" onclick="redirectDonate()">DONATE NOW</button>
+                    <button class="button" onclick="redirectStat()" id="num-stat">ACTIVE FIRES: </button>
+                    <button class="button" onclick="redirectStat()" id="size-stat">TOTAL SIZE: </button>
+                </div>
+            </div>
         </div>
     </body>
 </html>
