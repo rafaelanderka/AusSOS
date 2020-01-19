@@ -138,6 +138,10 @@ function redirectDonate() {
     window.location.href = "https://www.wwf.org.au/get-involved/bushfire-emergency#gs.ta7jim";
 }
 
+function redirectStat() {
+    window.location.href = "https://www.rfs.nsw.gov.au/fire-information/fires-near-me";
+}
+
 function update() {
     setCanvasPos();
 
