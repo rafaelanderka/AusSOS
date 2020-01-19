@@ -1,10 +1,10 @@
-#Overview
+# Overview
 
 AussieSOS is an interactive website to spread awareness and raise funds using live data from the ongoing Australian wildfires. Pulling data directly from Australian firefighting services and using a highly responsive, JavaScript-based globe model that we created from scratch, users can drag and orientate a to-scale polygon representing the total fire area. This can be placed on any part of the globe to gain a better intuitive understanding of the scale of the fires. Immediate donation to support all affected is available.
 
 For example: if 32,000km2 of Australia is on fire, that is twice the size of Wales. 
 
-#The Issue in More Depth
+# The Issue in More Depth
 
 Over the last several months (winter ‘19/’20), the nation of Australia has experienced its most devastating wildfires in recorded history. Unprecedented in scale and ferocity, to-date 11 million hectares of land has been ravished, 30 people have died and 1.25 billion animals are estimated to have been lost. Sadly, Australia is only at the start of its bushfire season, and these fires continue to threaten.
 
@@ -12,7 +12,7 @@ The problem, at heart, is a common one: comprehending large numbers. It is impor
 
 In our technology, we allow the user to drag a graphical representation of the total area of Australia that is currently on fire. This is supported by livestreamed and up-to-date information from the Rural New South Wales Fire Service. A donation form to take action on is also a key feature.
 
-#Our Project
+# Our Project
 
 Made entirely in the front-end, before the Hackathon we all had little experience of web-dev and JavaScript. Our solution is comprised of the following:
 
