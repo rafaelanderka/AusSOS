@@ -1,42 +1,42 @@
-var camera
-var scene
-var renderer;
-var composer;
-var raycaster;
-var overlayMesh;
-var requestAnimationFrame;
-var viewFocus;
-var viewRho;
-var viewTheta;
-var viewPhi;
-var viewOmegaTheta;
-var viewOmegaPhi;
-var overlayTheta;
-var overlayPhi;
-var overlayOmegaTheta;
-var overlayOmegaPhi;
-var canvas;
-var mousePos;
-var mouseDelta;
-var canvasPos;
-var isRotating;
-var isDragging;
-var showcaseMode;
-var directionalLight;
-var pointLight;
-var isFirstTouch;
-var pixelRatio;
-var clock;
+let camera
+let scene
+let renderer;
+let composer;
+let raycaster;
+let overlayMesh;
+let requestAnimationFrame;
+let viewFocus;
+let viewRho;
+let viewTheta;
+let viewPhi;
+let viewOmegaTheta;
+let viewOmegaPhi;
+let overlayTheta;
+let overlayPhi;
+let overlayOmegaTheta;
+let overlayOmegaPhi;
+let canvas;
+let mousePos;
+let mouseDelta;
+let canvasPos;
+let isRotating;
+let isDragging;
+let showcaseMode;
+let directionalLight;
+let pointLight;
+let isFirstTouch;
+let pixelRatio;
+let clock;
 let fireData = {};
 let totalSize = 0;
 let scaledRadius = 0;
 
 // Global constants
-var viewPhiMax = 3.04;
-var viewPhiMin = 0.1;
-var lightThetaOffset = 1
-var lightPhiOffset = 1;
-var earthSurfaceAreaKM = 510100000;
+const viewPhiMax = 3.04;
+const viewPhiMin = 0.1;
+const lightThetaOffset = 1;
+const lightPhiOffset = 1;
+const earthSurfaceAreaKM = 510100000;
 
 function init() {
     // Initialise time
@@ -54,7 +54,7 @@ function init() {
 
     // Initialise view
     viewFocus = new THREE.Vector3(0, 0, 0);
-    viewRho = 1;
+    viewRho = 1.05;
     viewTheta = 0.2;
     viewPhi = Math.PI / 2;
     viewOmegaTheta = 0;
@@ -128,17 +128,17 @@ function init() {
     
 
     // Projection stuff
-    for (var vertexIndex = 0; vertexIndex < overlayMesh.geometry.vertices.length; vertexIndex++) {
-        var localVertex = overlayMesh.geometry.vertices[vertexIndex].clone();
+    for (let vertexIndex = 0; vertexIndex < overlayMesh.geometry.vertices.length; vertexIndex++) {
+        let localVertex = overlayMesh.geometry.vertices[vertexIndex].clone();
         localVertex.z = 0.61;
 
-        var directionVector = new THREE.Vector3();
+        let directionVector = new THREE.Vector3();
         directionVector.subVectors(earthMesh.position, localVertex);
         directionVector.normalize();
 
-        var ray = new THREE.Raycaster(localVertex, directionVector);
+        let ray = new THREE.Raycaster(localVertex, directionVector);
 
-        var collisionResults = ray.intersectObject(earthMesh);
+        let collisionResults = ray.intersectObject(earthMesh);
 
         if (collisionResults.length > 0) {
             overlayMesh.geometry.vertices[vertexIndex].z = collisionResults[0].point.z + 0.001;
@@ -160,7 +160,7 @@ function init() {
     scene.add(directionalLight);
     */
     pointLight = new THREE.PointLight(0xFFFFFF, 0.5, 100)
-    var lightPos = transformSphericalToView(viewRho, viewTheta + lightThetaOffset, viewPhi + lightPhiOffset);
+    let lightPos = transformSphericalToView(viewRho, viewTheta + lightThetaOffset, viewPhi + lightPhiOffset);
     pointLight.position.set(0, 0, 0);
     updateLights();
     scene.add(pointLight);
