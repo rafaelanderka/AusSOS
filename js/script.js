@@ -127,32 +127,6 @@ function init() {
     overlayMesh.material.side = THREE.DoubleSide;
     scene.add(overlayMesh);
     
-
-
-
-
-
-    // FIRE?
-
-    let pyramid = new THREE.ConeGeometry(.1, .2, 6);
-    let pyramidMaterial = new THREE.MeshBasicMaterial({color: 'orange'});
-    let pyramidMesh = new THREE.Mesh(pyramid, pyramidMaterial);
-    scene.add(pyramidMesh);
-    pyramids.push(pyramidMesh);
-
-
-    let pyramid2 = new THREE.ConeGeometry(.1, .2, 6);
-    let pyramid2Material = new THREE.MeshBasicMaterial({color: 'orange'});
-    let pyramid2Mesh = new THREE.Mesh(pyramid2, pyramid2Material);
-    pyramid2Mesh.position.addScalar(0.15);
-    scene.add(pyramid2Mesh);
-    pyramids.push(pyramid2Mesh);
-
-
-
-
-
-
     // Projection stuff
     for (let vertexIndex = 0; vertexIndex < overlayMesh.geometry.vertices.length; vertexIndex++) {
         let localVertex = overlayMesh.geometry.vertices[vertexIndex].clone();
@@ -308,8 +282,32 @@ function update() {
 }
 
 function updateFire() {
-    for (let pyramid of pyramids) {
-        pyramid.position.y += 0.001;
+    // populate
+    if (pyramids.length < 30) {
+        let pyramid = new THREE.ConeGeometry(.1, .2, 6);
+        let pyramidMaterial = new THREE.MeshBasicMaterial({color: 'orange'});
+        let pyramidMesh = new THREE.Mesh(pyramid, pyramidMaterial);
+        scene.add(pyramidMesh);
+
+        pyramidMesh.position = getCenterPoint(overlayMesh);
+        pyramidMesh.position.z = 0.61;
+        pyramidMesh.position.x += Math.random() * 0.5
+        pyramids.push(pyramidMesh);
+    }
+    // remove
+    else {
+
+    }
+
+    // update movement
+    for (let pyramidMesh of pyramids) {
+        let old
+        let temp = getCenterPoint(overlayMesh);
+        pyramidMesh.position.set(temp.x, temp.y, temp.z);
+        pyramidMesh.position.x += 0.1;
+
+        pyramidMesh.geometry.verticesNeedUpdate = true;
+        pyramidMesh.position.y += 0.001;
     }
 }
 
