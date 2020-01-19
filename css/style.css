@@ -43,7 +43,7 @@ body {
     bottom: 35px;
     right: 20px;
     margin-left: 20px;
-    max-width: 300px;
+    max-width: 400px;
     transition: all 2s linear;
 }
 
@@ -51,7 +51,8 @@ body {
     padding: 25px 20px 1px;
     background-color: #9C907F;
     color: black;
-    text-align: justify
+    text-align: justify;
+    text-transform: uppercase;
 }
 
 .closebtn {
