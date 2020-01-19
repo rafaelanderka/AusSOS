@@ -4,6 +4,8 @@ body {
     margin: 0px 0px 0px;
     background: #18191D;
     overflow: hidden;
+    font-family: sans-serif;
+    font-weight: 600;
 }
 
 .wrapper {
@@ -35,6 +37,43 @@ body {
 .button:active {
     background-color: #83735C;
 }
+
+.callout {
+    position: fixed;
+    bottom: 35px;
+    right: 20px;
+    margin-left: 20px;
+    max-width: 300px;
+    transition: all 2s linear;
+}
+  
+.callout-header {
+    padding: 25px 15px;
+    background: #9C907F;
+    font-size: 30px;
+    color: black;
+}
+
+.callout-container {
+    padding: 8px;
+    background-color: rgb(209, 196, 174);
+    color: black;
+    text-align: justify
+}
+
+.closebtn {
+    position: absolute;
+    top: 5px;
+    right: 15px;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.closebtn:hover {
+    color: lightgrey;
+}
+
 
 #logo {
     position: absolute;

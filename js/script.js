@@ -255,6 +255,10 @@ function onClick(e) {
     isRotating = true;
 }
 
+function vanishWelcome() {
+    document.getElementById("callout").style.opacity = "0";
+}
+
 function redirectDonate() {
     window.location.href = "https://www.wwf.org.au/get-involved/bushfire-emergency#gs.ta7jim";
 }

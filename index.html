@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Australia Fire Visualiser</title>
+        <title>AussieSOS</title>
         <link rel="stylesheet" href="css/style.css">
         <script src="js/three.min.js"></script>
         <script src="js/postprocessing.min.js"></script>
@@ -18,6 +18,13 @@
                     <button class="button" onclick="redirectDonate()">DONATE NOW</button>
                     <button class="button" onclick="redirectStat()" id="num-stat">ACTIVE FIRES: </button>
                     <button class="button" onclick="redirectStat()" id="size-stat">TOTAL SIZE: </button>
+                </div>
+
+                <div id="callout" class="callout">
+                <div class="callout-header">Welcome</div>
+                <span class="closebtn" onclick="vanishWelcome()">×</span>
+                <div class="callout-container">
+                    <p>This is an interactive map. The bright white dot represents the combined area of all of the fires in Australia <i>right now</i>. Grab it and move it around to compare it with countries and cities of the world.</p>
                 </div>
             </div>
         </div>
