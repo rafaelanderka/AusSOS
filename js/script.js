@@ -231,6 +231,10 @@ function redirectDonate() {
     window.location.href = "https://www.wwf.org.au/get-involved/bushfire-emergency#gs.ta7jim";
 }
 
+function redirectStat() {
+    window.location.href = "https://www.rfs.nsw.gov.au/fire-information/fires-near-me";
+}
+
 function update() {
     // Set canvas position
     // TODO: resize canvas
@@ -304,12 +308,19 @@ function getFireData() {
         .then(function (text) {
             fireData = JSON.parse(text);
 
+            let totalSize = 0;
+
             for (const feature of fireData["features"]) {
                 let sizeString = feature["properties"]["description"].match(/SIZE: [0-9]*/gm)[0];
                 sizeString = sizeString.slice(6);
-                console.log(sizeString);
-                totalSize = sizeString;
+                totalSize += parseInt(sizeString);
             }
+
+            let numFiresElement = document.getElementById('num-stat');
+            numFiresElement.innerHTML += fireData["features"].length;
+
+            let fireSizeElement = document.getElementById('size-stat');
+            fireSizeElement.innerHTML += (totalSize / 100) + ' KM&sup2';
         })
         .catch(function (error) {
             console.log(error);
