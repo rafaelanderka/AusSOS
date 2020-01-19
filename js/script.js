@@ -1,10 +1,7 @@
 var camera
 var scene
 var renderer;
-var geometry
-var material;
-var earthLandMesh;
-var earthWaterMesh;
+var planeMesh;
 var requestAnimationFrame;
 var viewFocus;
 var viewRho;
@@ -65,6 +62,38 @@ function init() {
     material.bumpMap = THREE.ImageUtils.loadTexture('images/8081_earthbump10k.jpg');
     material.bumpScale = 0.02;
 
+
+    // Plane that gets projected on Earth
+    let planeGeometry = new THREE.PlaneGeometry(0.1, 0.1, 10, 10);
+    let planeMaterial = new THREE.MeshPhongMaterial({
+                color: 'blue'
+    });
+    planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+    planeMesh.material.side = THREE.DoubleSide;
+    scene.add(planeMesh)
+
+    // Projection stuff
+    for (var vertexIndex = 0; vertexIndex < planeMesh.geometry.vertices.length; vertexIndex++) {
+        var localVertex = planeMesh.geometry.vertices[vertexIndex].clone();
+        localVertex.z = 0.61;
+
+        var directionVector = new THREE.Vector3();
+        directionVector.subVectors(earthMesh.position, localVertex);
+        directionVector.normalize();
+
+        var ray = new THREE.Raycaster(localVertex, directionVector);
+
+        var collisionResults = ray.intersectObject(earthMesh);
+
+        if (collisionResults.length > 0) {
+            planeMesh.geometry.vertices[vertexIndex].z = collisionResults[0].point.z + 0.01;
+        }
+    }
+
+    // IDK if we need this
+    planeMesh.geometry.verticesNeedUpdate = true;
+    planeMesh.geometry.normalsNeedUpdate = true;
+
     // Set up scene lighting
     let ambientLight = new THREE.AmbientLight(0x777777);
     scene.add(ambientLight);
@@ -118,6 +147,11 @@ function update() {
         viewOmegaTheta = mouseDelta.x * 0.005;
         viewOmegaPhi = mouseDelta.y * 0.005;
     }
+
+    // Rotate the plane
+    let axis = new THREE.Vector3(1, 0, 0);
+    axis.normalize();
+    planeMesh.rotateOnWorldAxis(axis, 0.01);
 
     updateView();
     updateCameraPosition();
