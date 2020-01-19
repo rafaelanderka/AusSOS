@@ -22,6 +22,8 @@ var isRotating;
 var isDragging;
 var directionalLight;
 var pointLight;
+var isFirstTouch;
+var pixelRatio;
 let fireData = {};
 
 // Global constants
@@ -33,6 +35,9 @@ var lightPhiOffset = 0;
 function init() {
     // Initialise time
     t = 0;
+
+    // Initialise pixel ratio
+    pixelRatio = window.devicePixelRatio || 1;
 
     // Initialise view
     viewFocus = new THREE.Vector3(0, 0, 0);
@@ -135,6 +140,26 @@ function init() {
     mouseDelta = {x: 0, y: 0};
     isRotating = false;
     isDragging = false;
+
+    // Set up touch controls
+    isFirstTouch = true;
+
+    canvas.addEventListener("touchmove", function(e) { 
+        e.preventDefault();
+        setMousePos(e.targetTouches[0]);
+    }, false);
+
+    canvas.addEventListener("touchstart", function(e) { 
+        e.preventDefault();
+        onClick(e.targetTouches[0]);
+    });
+
+    canvas.addEventListener("touchend", function(e) { 
+        e.preventDefault();
+        isRotating = false; 
+        isDragging = false;
+        isFirstTouch = true;
+    });
 
     // Set up requestAnimationFrame
     requestAnimationFrame = window.requestAnimationFrame || 
@@ -340,10 +365,15 @@ function setMousePos(e) {
         x: scaleByPixelRatio(e.clientX - canvasPos.x),
         y: scaleByPixelRatio(e.clientY - canvasPos.y)
     };
-    mouseDelta = {
-        x: prevMousePos.x - mousePos.x,
-        y: prevMousePos.y - mousePos.y
+    if (isFirstTouch) {
+        mouseDelta = {x: 0, y:0};
+    } else {
+        mouseDelta = {
+            x: prevMousePos.x - mousePos.x,
+            y: prevMousePos.y - mousePos.y
+        }
     }
+    isFirstTouch = false;
     //console.log(mouseDelta);
 }
 
