@@ -115,7 +115,7 @@ function init() {
     let overlayGeometry = new THREE.CircleGeometry(scaledRadius, 64, 10, 10);
     
     let overlayMaterial = new THREE.MeshBasicMaterial({
-                color: 'red'
+        color: 'red'
     });
     overlayMesh = new THREE.Mesh(overlayGeometry, overlayMaterial);
     overlayMesh.material.side = THREE.DoubleSide;
@@ -136,15 +136,13 @@ function init() {
         var collisionResults = ray.intersectObject(earthMesh);
 
         if (collisionResults.length > 0) {
-            overlayMesh.geometry.vertices[vertexIndex].z = collisionResults[0].point.z + 0.01;
+            overlayMesh.geometry.vertices[vertexIndex].z = collisionResults[0].point.z + 0.001;
         }
     }
 
     // IDK if we need this
     overlayMesh.geometry.verticesNeedUpdate = true;
     overlayMesh.geometry.normalsNeedUpdate = true;
-
-
 
     // Set up scene lighting
     let ambientLight = new THREE.AmbientLight(0x18191D);
@@ -170,6 +168,7 @@ function init() {
     canvas.addEventListener("mousemove", setMousePos, false);
     canvas.addEventListener("mousedown", onClick, false);
     canvas.addEventListener("mouseup", function(){ isRotating = false; isDragging = false; }, false);
+
     mousePos = {x: 0, y: 0};
     mouseDelta = {x: 0, y: 0};
     isRotating = false;
@@ -193,6 +192,13 @@ function init() {
         isRotating = false; 
         isDragging = false;
         isFirstTouch = true;
+    });
+
+    canvas.addEventListener("wheel", function(e) {
+        console.log(viewRho);
+        if (viewRho + (e.deltaY * 0.001) > 0.58 && viewRho + (e.deltaY * 0.001) < 1.1) {
+            viewRho += (e.deltaY * 0.001);
+        }
     });
 
     // Set up requestAnimationFrame
@@ -242,12 +248,12 @@ function update() {
     // Handle rotation and dragging
     if (isRotating) {
         // Move the camera
-        viewOmegaTheta = viewOmegaTheta * 0.95 + mouseDelta.x * 0.0001;
-        viewOmegaPhi = viewOmegaPhi * 0.95 + mouseDelta.y * 0.0001;
+        viewOmegaTheta = viewOmegaTheta * 0.95 + mouseDelta.x * 0.0001 * Math.pow(viewRho, 3);
+        viewOmegaPhi = viewOmegaPhi * 0.95 + mouseDelta.y * 0.0001 * Math.pow(viewRho, 3);
     } else if (isDragging) {
         // Move the overlay
-        overlayOmegaTheta = overlayOmegaTheta * 0.8 + mouseDelta.x * 0.0003;
-        overlayOmegaPhi = overlayOmegaPhi * 0.8 + mouseDelta.y * 0.0003;
+        overlayOmegaTheta = overlayOmegaTheta * 0.8 + mouseDelta.x * 0.0003 * Math.pow(viewRho, 3);
+        overlayOmegaPhi = overlayOmegaPhi * 0.8 + mouseDelta.y * 0.0003 * Math.pow(viewRho, 3);
     }
 
     // Call update methods
