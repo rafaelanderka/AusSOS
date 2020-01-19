@@ -107,7 +107,20 @@ function init() {
     let geometry = new THREE.SphereGeometry(0.5, 32, 32);
     let material = new THREE.MeshLambertMaterial();
     let earthMesh = new THREE.Mesh(geometry, material);
+    var glowMesh = new THREEx.GeometricGlowMesh(earthMesh);
+    var insideUniforms	= glowMesh.insideMesh.material.uniforms;
+    insideUniforms.glowColor.value.set('0xFFFFFF');
+    insideUniforms.power.value = 5;
+    insideUniforms.coeficient.value = 0.7;
+    var outsideUniforms	= glowMesh.outsideMesh.material.uniforms;
+    outsideUniforms.glowColor.value.set('FF0000');
+    outsideUniforms.power.value = 3;
+    outsideUniforms.coeficient.value = 0.05;
+    earthMesh.add(glowMesh.object3d);
     scene.add(earthMesh)
+
+    // Atmosphere material
+    //var atmosMaterial = THREEx.createAtmosphereMaterial()
     
     // Load Earth textures
     material.map = THREE.ImageUtils.loadTexture('images/Earth_Clouds_6k.jpg');
