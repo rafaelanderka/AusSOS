@@ -21,6 +21,7 @@ var mouseDelta;
 var canvasPos;
 var isRotating;
 var isDragging;
+var showcaseMode;
 var directionalLight;
 var pointLight;
 var isFirstTouch;
@@ -33,8 +34,8 @@ let scaledRadius = 0;
 // Global constants
 var viewPhiMax = 3.04;
 var viewPhiMin = 0.1;
-var lightThetaOffset = 0;
-var lightPhiOffset = 0;
+var lightThetaOffset = 1
+var lightPhiOffset = 1;
 var earthSurfaceAreaKM = 510100000;
 
 function init() {
@@ -42,7 +43,11 @@ function init() {
     clock = new THREE.Clock();
     t = 0;
 
+    // Get fire data
     getFireData();
+    
+    // Initialise showcase mode
+    showcaseMode = true;
 
     // Initialise pixel ratio
     pixelRatio = window.devicePixelRatio || 1;
@@ -50,7 +55,7 @@ function init() {
     // Initialise view
     viewFocus = new THREE.Vector3(0, 0, 0);
     viewRho = 1;
-    viewTheta = 0;
+    viewTheta = 0.2;
     viewPhi = Math.PI / 2;
     viewOmegaTheta = 0;
     viewOmegaPhi = 0;
@@ -83,7 +88,7 @@ function init() {
         kernelSize: POSTPROCESSING.KernelSize.HUGE });
     const bloomEffect2 = new POSTPROCESSING.BloomEffect({ 
         luminanceThreshold: 0.4,
-        blendFunction: POSTPROCESSING.BlendFunction.ADD,
+        blendFunction: POSTPROCESSING.BlendFunction.SCREEN,
         kernelSize: POSTPROCESSING.KernelSize.LARGE });
     const vignetteEffect = new POSTPROCESSING.VignetteEffect({
         darkness: 0.4
@@ -115,7 +120,7 @@ function init() {
     let overlayGeometry = new THREE.CircleGeometry(scaledRadius, 64, 10, 10);
     
     let overlayMaterial = new THREE.MeshBasicMaterial({
-                color: 'red'
+                color: 'white'
     });
     overlayMesh = new THREE.Mesh(overlayGeometry, overlayMaterial);
     overlayMesh.material.side = THREE.DoubleSide;
@@ -140,11 +145,9 @@ function init() {
         }
     }
 
-    // IDK if we need this
+    // IDK if we need this -- thanks Neil :))
     overlayMesh.geometry.verticesNeedUpdate = true;
     overlayMesh.geometry.normalsNeedUpdate = true;
-
-
 
     // Set up scene lighting
     let ambientLight = new THREE.AmbientLight(0x18191D);
@@ -164,7 +167,6 @@ function init() {
 
     // Set up global raycaster
     raycaster = new THREE.Raycaster();
-
     
     // Set up mouse controls
     canvas.addEventListener("mousemove", setMousePos, false);
@@ -200,12 +202,18 @@ function init() {
                             window.mozRequestAnimationFrame || 
                             window.webkitRequestAnimationFrame || 
                             window.msRequestAnimationFrame;
+
+    // Set up canvas resizing
+    window.addEventListener( 'resize', onWindowResize, false );
     
     // Start update loop
     update();
 }
 
 function onClick(e) {
+    // Disable showcase mode on first click
+    showcaseMode = false;
+
     // Set state based on raycast intersection
     var centeredMouse = {x: 0, y: 0};
     centeredMouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
@@ -239,6 +247,11 @@ function update() {
     // TODO: resize canvas
     setCanvasPos();
 
+    // Handle showcase mode rotation
+    if (showcaseMode) {
+        viewOmegaTheta = 0.005;
+    }
+
     // Handle rotation and dragging
     if (isRotating) {
         // Move the camera
@@ -258,6 +271,15 @@ function update() {
     //renderer.render(scene, camera);
     requestAnimationFrame(update);
     composer.render(clock.getDelta());
+}
+
+function onWindowResize() {
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer.setSize( width, height );
+    composer.setSize( width, height );
 }
 
 function updateOverlay() {
