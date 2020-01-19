@@ -199,9 +199,9 @@ function init() {
     });
 
     canvas.addEventListener("wheel", function(e) {
-        console.log(viewRho);
-        if (viewRho + (e.deltaY * 0.001) > 0.58 && viewRho + (e.deltaY * 0.001) < 1.1) {
-            viewRho += (e.deltaY * 0.001);
+        if (camera.getFocalLength() + (e.deltaY * 0.06) > 15 && camera.getFocalLength() + (e.deltaY * 0.06) < 100) {
+            console.log(camera.getFocalLength());
+            camera.setFocalLength(camera.getFocalLength() + e.deltaY * 0.06);
         }
     });
 
@@ -263,12 +263,12 @@ function update() {
     // Handle rotation and dragging
     if (isRotating) {
         // Move the camera
-        viewOmegaTheta = viewOmegaTheta * 0.95 + mouseDelta.x * 0.0001 * Math.pow(viewRho, 3);
-        viewOmegaPhi = viewOmegaPhi * 0.95 + mouseDelta.y * 0.0001 * Math.pow(viewRho, 3);
+        viewOmegaTheta = viewOmegaTheta * 0.95 + mouseDelta.x * 0.003 / camera.getFocalLength();
+        viewOmegaPhi = viewOmegaPhi * 0.95 + mouseDelta.y * 0.003 / camera.getFocalLength();
     } else if (isDragging) {
         // Move the overlay
-        overlayOmegaTheta = overlayOmegaTheta * 0.8 + mouseDelta.x * 0.0003 * Math.pow(viewRho, 3);
-        overlayOmegaPhi = overlayOmegaPhi * 0.8 + mouseDelta.y * 0.0003 * Math.pow(viewRho, 3);
+        overlayOmegaTheta = overlayOmegaTheta * 0.8 + mouseDelta.x * 0.008 / camera.getFocalLength();
+        overlayOmegaPhi = overlayOmegaPhi * 0.8 + mouseDelta.y * 0.008 / camera.getFocalLength();
     }
 
     // Call update methods
