@@ -5,11 +5,17 @@ body {
     background: #18191D;
 }
 
-.donate-button {
-    float: right;
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
     z-index: 1;
     right: 5%;
-    top: 5%;
+    margin-top: 2.1vh;
+    width: 170px;
+}
+
+.button {
     background-color: #9C907F;
     border: none;
     color: #18191D;
@@ -18,19 +24,20 @@ body {
     text-decoration: none;
     font-size: 17px;
     font-weight: 800;
-    margin: 4.05vh 4px 0px;
+    margin-bottom: 15px;
 }
 
-.donate-button:hover {
+.button:hover {
     background-color: #A9A092;
 }
 
-.donate-button:active {
+.button:active {
     background-color: #83735C;
 }
 
 #logo {
-    float: left;
+    position: absolute;
+    display: block;
     z-index: 1;
     top: 4.5%;
     left: 5%;
