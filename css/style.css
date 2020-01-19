@@ -11,7 +11,7 @@ body {
     position: absolute;
     z-index: 1;
     right: 5%;
-    top: 5%;
+    margin-top: 2.1vh;
     width: 170px;
 }
 
@@ -24,7 +24,7 @@ body {
     text-decoration: none;
     font-size: 17px;
     font-weight: 800;
-    margin: 4.05vh 2px 0px 0px;
+    margin-bottom: 15px;
 }
 
 .button:hover {
