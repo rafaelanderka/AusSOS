@@ -18,6 +18,8 @@ In our technology, we allow the user to drag a graphical representation of the t
 
 # Our Project
 
+![](https://github.com/rafaelanderka/hackcambridge101/blob/master/promo/aussiesos-zoom.gif?raw=true)
+
 Made entirely in the front-end, before the Hackathon we all had little experience of web-dev and JavaScript. Our solution is comprised of the following:
 
 - JSON Data Parser: we take the data directly from the Rural Fire Service of Australia and parse this data to strip out everything except the total number of fires, and calculate the total area on fire (in km2): https://www.rfs.nsw.gov.au/fire-information/fires-near-me
