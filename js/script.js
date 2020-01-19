@@ -43,7 +43,7 @@ function init() {
 
     // Set up scene
     scene = new THREE.Scene();
-    scene.background = new THREE.Color( 0xfff9e6 ); // UPDATED
+    scene.background = new THREE.Color( 0x18191D ); // UPDATED
 
     // Set up renderer
     renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -52,15 +52,17 @@ function init() {
 
     // Set up sphere
     let geometry = new THREE.SphereGeometry(0.5, 32, 32);
-    let material = new THREE.MeshPhongMaterial();
+    let material = new THREE.MeshLambertMaterial();
     let earthMesh = new THREE.Mesh(geometry, material);
 
     scene.add(earthMesh)
 
     // Load Earth textures
-    material.map = THREE.ImageUtils.loadTexture('images/8081_earthmap10k.jpg');
-    material.bumpMap = THREE.ImageUtils.loadTexture('images/8081_earthbump10k.jpg');
-    material.bumpScale = 0.02;
+    material.map = THREE.ImageUtils.loadTexture('images/Earth_Clouds_6k.jpg');
+    material.emissiveMap = THREE.ImageUtils.loadTexture('images/Earth_Illumination_6k.jpg');
+    material.emissive = new THREE.Color(0xFFCCBB);
+    //material.bumpMap = THREE.ImageUtils.loadTexture('images/8081_earthbump10k.jpg');
+    //material.bumpScale = 1;
 
 
     // Plane that gets projected on Earth
@@ -95,7 +97,7 @@ function init() {
     planeMesh.geometry.normalsNeedUpdate = true;
 
     // Set up scene lighting
-    let ambientLight = new THREE.AmbientLight(0x777777);
+    let ambientLight = new THREE.AmbientLight(0x18191D);
     scene.add(ambientLight);
     /*
     directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
@@ -104,7 +106,7 @@ function init() {
     directionalLight.castShadow = true;
     scene.add(directionalLight);
     */
-    pointLight = new THREE.PointLight(0xFFFFFF, 1, 100)
+    pointLight = new THREE.PointLight(0xFFFFFF, 0.5, 100)
     var lightPos = transformSphericalToView(viewRho, viewTheta + lightThetaOffset, viewPhi + lightPhiOffset);
     pointLight.position.set(0, 0, 0);
     updateLights();
@@ -121,10 +123,6 @@ function init() {
     mousePos = {x: 0, y: 0};
     mouseDelta = {x: 0, y: 0};
     isRotating = false;
-
-    // Set up mouse controls
-    let controls = new THREE.OrbitControls( camera, renderer.domElement );
-    controls.update();
 
     // Set up requestAnimationFrame
     requestAnimationFrame = window.requestAnimationFrame || 
@@ -144,8 +142,8 @@ function update() {
     setCanvasPos();
 
     if (isRotating) {
-        viewOmegaTheta = mouseDelta.x * 0.005;
-        viewOmegaPhi = mouseDelta.y * 0.005;
+        viewOmegaTheta = viewOmegaTheta * 0.95 + mouseDelta.x * 0.00006;
+        viewOmegaPhi = viewOmegaPhi * 0.95 + mouseDelta.y * 0.00006;
     }
 
     // Rotate the plane
