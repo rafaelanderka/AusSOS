@@ -109,14 +109,13 @@ function init() {
     material.emissiveMap = THREE.ImageUtils.loadTexture('images/Earth_Fire_6k.png');
     material.emissive = new THREE.Color(0xFF8877);
 
-    // Plane that gets projected on Earth
-//    let overlayGeometry = new THREE.PlaneGeometry(1, 1, 10, 10);
+    // Overlay that gets projected on Earth
     let ratio = earthSurfaceAreaKM / 3.14;
     scaledRadius = Math.sqrt((49000 / ratio) / 3.14);
     let overlayGeometry = new THREE.CircleGeometry(scaledRadius, 64, 10, 10);
     
-    let overlayMaterial = new THREE.MeshPhongMaterial({
-                color: 'blue'
+    let overlayMaterial = new THREE.MeshBasicMaterial({
+                color: 'red'
     });
     overlayMesh = new THREE.Mesh(overlayGeometry, overlayMaterial);
     overlayMesh.material.side = THREE.DoubleSide;
