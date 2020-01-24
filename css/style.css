@@ -41,7 +41,7 @@ body {
 .callout {
     position: fixed;
     bottom: 35px;
-    right: 20px;
+    right: 5%;
     margin-left: 20px;
     max-width: 400px;
     transition: all 2s linear;
@@ -68,15 +68,14 @@ body {
     color: lightgrey;
 }
 
-
 #logo {
     position: absolute;
     display: block;
     z-index: 1;
     top: 4.5%;
     left: 5%;
-    width: 273px;
-    margin: 3.3vh 0px 0px;
+    width: 210px;
+    margin: 3vh 0px 0px;
 }
 
 #ui-wrapper {
