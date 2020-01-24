@@ -1,4 +1,4 @@
-![](https://raw.githubusercontent.com/rafaelanderka/hackcambridge101/master/images/AussieSOS.png)
+![](https://github.com/rafaelanderka/hackcambridge101/blob/master/images/AussieSOS.png?raw=true)
 
 # Overview
 
