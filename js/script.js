@@ -123,8 +123,8 @@ function init() {
     //var atmosMaterial = THREEx.createAtmosphereMaterial()
     
     // Load Earth textures
-    material.map = THREE.ImageUtils.loadTexture('images/Earth_Clouds_6k.jpg');
-    material.emissiveMap = THREE.ImageUtils.loadTexture('images/Earth_Fire_6k.png');
+    material.map = THREE.ImageUtils.loadTexture('images/Earth_Clouds_6K.jpg');
+    material.emissiveMap = THREE.ImageUtils.loadTexture('images/Earth_Fire_6K.png');
     material.emissive = new THREE.Color(0xFF8877);
 
     // Overlay that gets projected on Earth
