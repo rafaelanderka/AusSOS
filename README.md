@@ -2,7 +2,7 @@
 
 # Overview
 
-AussieSOS is an interactive website to spread awareness and raise funds using live data from the ongoing Australian wildfires. Pulling data directly from Australian firefighting services and using a highly responsive, JavaScript-based globe model that we created from scratch, users can drag and orientate a to-scale polygon representing the total fire area. This can be placed on any part of the globe to gain a better intuitive understanding of the scale of the fires. Immediate donation to support all affected is available.
+AusSOS is an interactive website to spread awareness and raise funds using live data from the ongoing Australian wildfires. Pulling data directly from Australian firefighting services and using a highly responsive, JavaScript-based globe model that we created from scratch, users can drag and orientate a to-scale polygon representing the total fire area. This can be placed on any part of the globe to gain a better intuitive understanding of the scale of the fires. Immediate donation to support all affected is available.
 
 ![](https://github.com/rafaelanderka/hackcambridge101/blob/master/promo/aussos-loop.gif?raw=true)
 
